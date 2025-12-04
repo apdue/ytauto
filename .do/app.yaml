@@ -1,0 +1,30 @@
+name: autovideo2
+region: sgp
+services:
+- name: web
+  github:
+    repo: apdue/ytauto
+    branch: main
+    deploy_on_push: true
+  run_command: node backend/server.js
+  environment_slug: node-js
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  build_command: npm install && cd frontend && npm install && npm run build && cd ..
+  http_port: 5001
+  envs:
+  - key: NODE_ENV
+    value: production
+  - key: PORT
+    value: "5001"
+    scope: RUN_TIME
+  - key: GOOGLE_CLIENT_ID
+    value: ""
+    scope: RUN_TIME
+  - key: GOOGLE_CLIENT_SECRET
+    value: ""
+    scope: RUN_TIME
+  - key: REDIRECT_URI
+    value: ""
+    scope: RUN_TIME
+

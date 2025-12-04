@@ -6,12 +6,10 @@ services:
     repo: apdue/ytauto
     branch: main
     deploy_on_push: true
-  run_command: node backend/server.js
-  environment_slug: node-js
+  dockerfile_path: Dockerfile
+  http_port: 5001
   instance_count: 1
   instance_size_slug: basic-xxs
-  build_command: npm install && cd frontend && npm install && npm run build && cd ..
-  http_port: 5001
   envs:
   - key: NODE_ENV
     value: production

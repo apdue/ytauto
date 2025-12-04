@@ -58,8 +58,8 @@ const mergeVideo = (clipPath, audioPath, outputPath, options = {}) => {
           .videoCodec('libx264')
           .audioCodec('aac')
           .outputOptions([
-            '-preset medium',
-            '-crf 23',
+            '-preset ultrafast',
+            '-crf 28',
             '-pix_fmt yuv420p',
             '-movflags +faststart'
           ])
@@ -231,7 +231,7 @@ const mergeVideoWithClips = (clipPaths, audioPath, outputPath, options = {}) => 
         
         // Build FFmpeg command manually with proper quoting to avoid fluent-ffmpeg path issues
         const filterComplex = filters.join(';');
-        const ffmpegCmd = `ffmpeg -f concat -safe 0 -i '${concatListPath}' -i '${audioPath}' -filter_complex '${filterComplex}' -map '[${finalVideo}]' -map '[audioout]' -vcodec libx264 -acodec aac -preset medium -crf 23 -pix_fmt yuv420p -movflags +faststart -shortest -t ${audioDuration} -r 30 -s 1920x1080 -y '${tempOutputPath}'`;
+        const ffmpegCmd = `ffmpeg -f concat -safe 0 -i '${concatListPath}' -i '${audioPath}' -filter_complex '${filterComplex}' -map '[${finalVideo}]' -map '[audioout]' -vcodec libx264 -acodec aac -preset ultrafast -crf 28 -pix_fmt yuv420p -movflags +faststart -shortest -t ${audioDuration} -r 30 -s 1920x1080 -y '${tempOutputPath}'`;
         
         console.log('Executing FFmpeg command with proper quoting...');
         console.log('Command:', ffmpegCmd);

@@ -6,9 +6,7 @@ services:
     repo: apdue/ytauto
     branch: main
     deploy_on_push: true
-  build_command: apt-get update && apt-get install -y ffmpeg && npm install && cd frontend && npm install && npm run build && cd ..
-  run_command: node backend/server.js
-  environment_slug: node-js
+  dockerfile_path: Dockerfile
   http_port: 5001
   instance_count: 1
   instance_size_slug: basic-xxs

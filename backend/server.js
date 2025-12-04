@@ -11,23 +11,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Root route
-app.get('/', (req, res) => {
-  res.json({
-    message: 'Auto Video Create API Server',
-    version: '1.0.0',
-    endpoints: {
-      projects: '/api/projects',
-      videos: '/api/videos',
-      youtube: '/api/youtube',
-      logs: '/api/logs',
-      queue: '/api/queue'
-    },
-    frontend: process.env.FRONTEND_URL || 'http://localhost:3000'
-  });
-});
-
-// Routes
+// API Routes (must be before static file serving)
 app.use('/api/projects', require('./routes/projects'));
 app.use('/api/videos', require('./routes/videos'));
 app.use('/api/create-videos', require('./routes/createVideos'));
@@ -41,9 +25,28 @@ app.use('/api/upload', require('./routes/upload'));
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, '../data/uploads')));
 
-// Serve static files from React app
+// API info route (only in development)
+if (process.env.NODE_ENV !== 'production') {
+  app.get('/', (req, res) => {
+    res.json({
+      message: 'Auto Video Create API Server',
+      version: '1.0.0',
+      endpoints: {
+        projects: '/api/projects',
+        videos: '/api/videos',
+        youtube: '/api/youtube',
+        logs: '/api/logs',
+        queue: '/api/queue'
+      },
+      frontend: process.env.FRONTEND_URL || 'http://localhost:3000'
+    });
+  });
+}
+
+// Serve static files from React app (production)
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../frontend/build')));
+  // All non-API routes should serve React app
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
   });

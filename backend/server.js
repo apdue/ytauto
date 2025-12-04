@@ -25,8 +25,25 @@ app.use('/api/upload', require('./routes/upload'));
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, '../data/uploads')));
 
-// API info route (only in development)
-if (process.env.NODE_ENV !== 'production') {
+// Serve static files from React app (check if build exists)
+const frontendBuildPath = path.join(__dirname, '../frontend/build');
+const frontendIndexPath = path.join(frontendBuildPath, 'index.html');
+const frontendBuildExists = require('fs').existsSync(frontendIndexPath);
+
+if (frontendBuildExists) {
+  // Serve static files from React app
+  app.use(express.static(frontendBuildPath));
+  
+  // All non-API routes should serve React app
+  app.get('*', (req, res) => {
+    // Don't serve React app for API routes
+    if (req.path.startsWith('/api/')) {
+      return res.status(404).json({ error: 'API endpoint not found' });
+    }
+    res.sendFile(frontendIndexPath);
+  });
+} else {
+  // API info route (if frontend build doesn't exist)
   app.get('/', (req, res) => {
     res.json({
       message: 'Auto Video Create API Server',
@@ -38,17 +55,9 @@ if (process.env.NODE_ENV !== 'production') {
         logs: '/api/logs',
         queue: '/api/queue'
       },
-      frontend: process.env.FRONTEND_URL || 'http://localhost:3000'
+      frontend: process.env.FRONTEND_URL || 'http://localhost:3000',
+      note: 'Frontend build not found. Please build the frontend first.'
     });
-  });
-}
-
-// Serve static files from React app (production)
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../frontend/build')));
-  // All non-API routes should serve React app
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
   });
 }
 
